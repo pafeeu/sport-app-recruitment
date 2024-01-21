@@ -1,0 +1,19 @@
+.match-button {
+    border-color: #d5e0e8 !important;
+    border-width: 2px !important;
+    border-radius: 0.5rem !important;
+    font-weight: 500;
+    color: #0a0a0a !important;
+    padding: 0.75rem !important;
+}
+.pagination-button {
+    border: 0 !important;
+    background-color: transparent !important;
+    color: #787879 !important;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.pagination-button:hover:not(:disabled) {
+    color: #0a0a0a !important;
+}

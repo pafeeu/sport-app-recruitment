@@ -1,0 +1,12 @@
+.rank-number {
+    width: 1.75em;
+    height: 1.75em;
+    border-radius: 0.75em;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 1em;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,0 +1,12 @@
+.is-half-rounded {
+    border-radius: 0.75rem !important;
+}
+
+.padding-with-lines > *:not(hr) {
+    margin: 1rem;
+}
+
+:root {
+    --icon-color: #fc5c17;
+    background-color: #fafafa;
+}
