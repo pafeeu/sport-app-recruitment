@@ -1,5 +1,4 @@
-import {useEffect, useState} from "react";
-import {Rank, TableResponse} from "../types.ts";
+import {Rank} from "../types.ts";
 import {getTable} from "../api.ts";
 import TeamLogotype from "../components/TeamLogotype.tsx";
 import GrayHeading from "../components/GrayHeading.tsx";
@@ -9,6 +8,9 @@ import {faGreaterThan} from "@fortawesome/free-solid-svg-icons";
 import OutsideContainer from "../components/OutsideContainer.tsx";
 import Container from "../components/Container.tsx";
 import Header from "../components/Header.tsx";
+import Counter from "../components/Counter.tsx";
+import {useQuery} from "@tanstack/react-query";
+import Form from "../components/Form.tsx";
 
 const getRankColor = (rankNumber: number): string => {
     return rankNumber <= 4 ? '#1c336c' : (rankNumber == 5 ? '#c82d2d' : (rankNumber == 6 ? '#a7a7a7' : '#ff5f5f'));
@@ -75,17 +77,20 @@ function TableLegend() {
         </div>
     </div>;
 }
-
+function TableContent() {
+    const {isPending, error, data} = useQuery({
+        queryKey: ['table'],
+        queryFn: getTable
+    });
+    if (isPending)
+        return <p>Data is loading...</p>;
+    if (error)
+        return <p>{error.message}</p>
+    if (data?.length)
+        return data.map((rank, index) => TableRow(rank, index));
+    return <p>No data.</p>
+}
 function Table() {
-
-    const [ranks, setRanks] = useState<Rank[]>([]);
-
-    useEffect(() => {
-        getTable()
-            .then((data: TableResponse) => {
-                setRanks(data.slice(0, 8));
-            });
-    }, []);
 
     return <>
         <div className={'py-2 px-6 has-text-weight-medium'} style={{backgroundColor: '#eeeff2', width: '100%'}}>
@@ -98,10 +103,21 @@ function Table() {
         <OutsideContainer>
             <div>
                 <Container>
+                    <Counter/>
+                    <Form/>
                     <Header/>
                     <div>
                         <TableHeader/>
-                        {ranks.map((rank, index) => TableRow(rank, index))}
+                        <TableContent/>
+                        {/*{isPending ? (*/}
+                        {/*    <p>Data is loading...</p>*/}
+                        {/*) : error ? (*/}
+                        {/*    <p>{error.message}</p>*/}
+                        {/*) : data.length ? (*/}
+                        {/*    data.map((rank, index) => TableRow(rank, index))*/}
+                        {/*) : (*/}
+                        {/*    <p>No data.</p>*/}
+                        {/*)}*/}
                         <TableLegend/>
                     </div>
                 </Container>
