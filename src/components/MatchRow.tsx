@@ -5,7 +5,7 @@ import {faTv} from '@fortawesome/free-solid-svg-icons';
 import {faCircleRight} from "@fortawesome/free-regular-svg-icons";
 function formatDate(date: Date): string {
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
     return `${day}-${month}-${year}`;
@@ -15,7 +15,7 @@ function MatchRow ({game}: {game:Game}) {
     return (
         <div className={'level is-mobile m-4'}>
             <div className={'level-left'}>
-                <div className={'level-item has-text-grey has-text-weight-normal mr-5'}>{formatDate(game._date_object)}</div>
+                <div className={'level-item has-text-grey has-text-weight-normal mr-5'}>{game.date}</div>
                 <div className={'level-item is-block'} style={{borderLeft: '2px solid #61aee4'}}>
                     <TeamLogotype team={game.home_team_object}/>
                     <TeamLogotype team={game.away_team_object}/>

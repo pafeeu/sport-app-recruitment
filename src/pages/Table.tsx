@@ -11,6 +11,10 @@ import Header from "../components/Header.tsx";
 import Counter from "../components/Counter.tsx";
 import {useQuery} from "@tanstack/react-query";
 import Form from "../components/Form.tsx";
+import AnimateDiv from "../animate.tsx";
+import {useReactTable, createColumnHelper, getCoreRowModel, flexRender} from '@tanstack/react-table';
+
+
 
 const getRankColor = (rankNumber: number): string => {
     return rankNumber <= 4 ? '#1c336c' : (rankNumber == 5 ? '#c82d2d' : (rankNumber == 6 ? '#a7a7a7' : '#ff5f5f'));
@@ -77,6 +81,82 @@ function TableLegend() {
         </div>
     </div>;
 }
+const columnHelper = createColumnHelper<Rank>();
+const columns = [
+    columnHelper.accessor('team', {
+        header: 'Drużyna',
+        cell: (info) => <TeamLogotype team={info.getValue()} biggerImage={true}/>
+    }),
+    columnHelper.accessor('games', {
+        header: 'M',
+        cell: (info) => <div>{info.getValue()}</div>,
+        footer: info => info.column.id,
+    }),
+    columnHelper.accessor('goals_scored', {
+        header: 'B',
+        cell: (info) => {
+            const row = info.row.original;
+            return <div>{`${row.goals_scored}:${row.goals_conceded}`}</div>;
+        },
+    }),
+    columnHelper.accessor('goals_ratio', {
+        header: 'RB',
+        cell: (info) => <div>{info.getValue()}</div>,
+    }),
+    columnHelper.accessor('points', {
+        header: 'P',
+        cell: (info) => <div className={'has-text-weight-bold'}>{info.getValue()}</div>
+    }),
+
+]
+
+function DataTable () {
+    const {isPending, error, data} = useQuery({
+        queryKey: ['table'],
+        queryFn: getTable
+
+    });
+
+    const table = useReactTable({
+        data: data || [],
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    })
+
+    return (
+        <table className={'table is-fullwidth'}>
+            <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                        <th key={header.id}>
+                            {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                )}
+                        </th>
+                    ))}
+                </tr>
+            ))}
+            </thead>
+            <tbody>
+            {table.getRowModel().rows.map(row => (
+                <tr key={row.id}>
+                    {row.getVisibleCells().map(cell => (
+                        <td key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                    ))}
+                </tr>
+            ))}
+            </tbody>
+        </table>
+    )
+}
+
+
 function TableContent() {
     const {isPending, error, data} = useQuery({
         queryKey: ['table'],
@@ -86,13 +166,17 @@ function TableContent() {
         return <p>Data is loading...</p>;
     if (error)
         return <p>{error.message}</p>
-    if (data?.length)
+    if (data?.length) {
+        console.log(data);
         return data.map((rank, index) => TableRow(rank, index));
+    }
     return <p>No data.</p>
 }
-function Table() {
 
-    return <>
+export default function Table() {
+    // const table = useReactTable();
+
+    return <AnimateDiv name={'table'}>
         <div className={'py-2 px-6 has-text-weight-medium'} style={{backgroundColor: '#eeeff2', width: '100%'}}>
             <span style={{color: '#000000'}}>
                 Piłka nożna
@@ -107,23 +191,22 @@ function Table() {
                     <Form/>
                     <Header/>
                     <div>
-                        <TableHeader/>
-                        <TableContent/>
-                        {/*{isPending ? (*/}
-                        {/*    <p>Data is loading...</p>*/}
-                        {/*) : error ? (*/}
-                        {/*    <p>{error.message}</p>*/}
-                        {/*) : data.length ? (*/}
-                        {/*    data.map((rank, index) => TableRow(rank, index))*/}
-                        {/*) : (*/}
-                        {/*    <p>No data.</p>*/}
-                        {/*)}*/}
-                        <TableLegend/>
+                        <DataTable/>
+                        {/*<TableHeader/>*/}
+                        {/*<TableContent/>*/}
+                        {/*/!*{isPending ? (*!/*/}
+                        {/*/!*    <p>Data is loading...</p>*!/*/}
+                        {/*/!*) : error ? (*!/*/}
+                        {/*/!*    <p>{error.message}</p>*!/*/}
+                        {/*/!*) : data.length ? (*!/*/}
+                        {/*/!*    data.map((rank, index) => TableRow(rank, index))*!/*/}
+                        {/*/!*) : (*!/*/}
+                        {/*/!*    <p>No data.</p>*!/*/}
+                        {/*/!*)}*!/*/}
+                        {/*<TableLegend/>*/}
                     </div>
                 </Container>
             </div>
         </OutsideContainer>
-    </>;
+    </AnimateDiv>;
 }
-
-export default Table;

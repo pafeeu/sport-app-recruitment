@@ -1,4 +1,4 @@
-import {GamesResponse, TableResponse} from "./types.ts";
+import {GamesResponse, Rank, TableResponse} from "./types.ts";
 
 const API_URL = 'https://php74.appgo.pl/sport_api/api/public/api/';
 
@@ -7,9 +7,12 @@ export function getGames(page: number, onPage: number, orderDirection: 'asc' | '
     return fetch(API_URL + `games?page=${page}&onPage=${onPage}&orderDirection=${orderDirection}&orderBy=${orderBy}`).then(res => res.json());
 }
 
-export function getTable(): Promise<TableResponse> {
+export function getTable(): Promise<Rank[]> {
     return fetch(API_URL + 'table').then(res => {
     // throw new Error('test error');
         return res.json();
+    }).catch(err => {
+        console.log(err);
+        return [];
     });
 }
